@@ -20,7 +20,7 @@ const readInput = async (fileName: string): Promise<number[][]> => {
 //   return x;
 // };
 
-const splice = (v, nv) => v.toSpliced(0, 2, nv);
+const splice = (v: number[], nv: number): number[] => v.toSpliced(0, 2, nv);
 
 export const ops: ((v : number[]) => number[])[] = [
     (v) => splice(v,  v[0] + v[1]), // +
