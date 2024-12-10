@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { Grid } from "@Utils/Grid";
 import { Coords } from "@Utils/Coords";
+import { Grid } from "@Utils/Grid";
 
 const getPairs = (count: number): number[][] => {
 	const pairs: number[][] = [];
@@ -67,20 +67,20 @@ const part1 = (grid: Grid<string>): number => {
 		}
 	}
 
-	Object.keys(antenna).forEach((antannaId) => {
+	for (const antannaId of Object.keys(antenna)) {
 		const antennae = antenna[antannaId];
 		for (const [a1i, a2i] of getPairs(antennae.length)) {
 			const pairAntiNodes = getAntiNodesPart2(antennae[a1i], antennae[a2i]);
 
-			pairAntiNodes.forEach((antiNode) => {
+			for (const antiNode of pairAntiNodes) {
 				if (grid.isInBounds(antiNode)) {
 					if (!antiNodes.find((an) => an.equals(antiNode))) {
 						antiNodes.push(antiNode);
 					}
 				}
-			});
+			}
 		}
-	});
+	}
 
 	return antiNodes.length;
 };
