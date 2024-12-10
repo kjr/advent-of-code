@@ -1,56 +1,6 @@
 import {readFile} from 'node:fs/promises';
-import Iterator = NodeJS.Iterator;
-
-type Coord = [number, number];
-
-class Grid {
-    private readonly data: string[][];
-
-    constructor(data: string[][]) {
-        this.data = data;
-    }
-
-    static fromString(stringData: string): Grid {
-        const data = stringData.split('\n').map(line => line.trim().split(''));
-
-        return new Grid(data);
-    };
-
-    isInBounds(x: number, y: number): boolean {
-        if (x < 0 || y < 0) {
-            return false;
-        }
-
-        if (y >= this.data.length) {
-            return false;
-        }
-
-        return x < this.data[y].length;
-    }
-
-    iterate(): Iterator<[number, number, string]> {
-        let x = -1, y = 0;
-        const data = this.data;
-
-        return {
-            next() {
-                x += 1;
-                if (x >= data[y].length) {
-                    x = 0;
-                    y += 1;
-                }
-
-                return {
-                    value: y < data.length ? [x, y, data[y][x]] : undefined,
-                    done: y >= data.length,
-                };
-            },
-            [Symbol.iterator]() {
-                return this;
-            }
-        }
-    }
-}
+import {Grid} from "@Utils/Grid";
+import {Coords} from "@Utils/Coords";
 
 const getPairs = (count: number): number[][] => {
     const pairs: number[][] = [];
@@ -64,31 +14,35 @@ const getPairs = (count: number): number[][] => {
     return pairs;
 };
 
-const readInput = async (fileName: string) => {
+const readInput = async (fileName: string): Promise<Grid<string>> => {
     const contents = await readFile(fileName);
+    const data = contents
+        .toString()
+        .split('\n')
+        .map(line => line.trim().split(''))
 
-    return Grid.fromString(contents.toString());
+    return new Grid<string>(data);
 };
 
-const getAntiNodes = ([a1x, a1y]: Coord, [a2x, a2y]: Coord): Coord[] => {
-    const dx = a2x - a1x;
-    const dy = a2y - a1y;
+const getAntiNodes = (c1: Coords, c2: Coords): Coords[] => {
+    const dx = c2.x - c1.x;
+    const dy = c2.y - c1.y;
 
-    const p1: Coord = [a1x - dx, a1y - dy];
-    const p2: Coord = [a2x + dx, a2y + dy];
+    const p1 = new Coords(c1.x - dx, c1.y - dy);
+    const p2 = new Coords(c2.x + dx, c2.y + dy);
 
     return [p1, p2];
 }
 
-const getAntiNodesPart2 = ([a1x, a1y]: Coord, [a2x, a2y]: Coord): Coord[] => {
-    const results: Coord[] = [];
+const getAntiNodesPart2 = (c1: Coords, c2: Coords): Coords[] => {
+    const results: Coords[] = [];
 
-    const dx = a2x - a1x;
-    const dy = a2y - a1y;
+    const dx = c2.x - c1.x;
+    const dy = c2.y - c1.y;
 
     for (let i = -60; i < 60; i++) { // Just totally cheat and generate loads of nodes that we trim later
-        const p1: Coord = [a1x - (dx * i), a1y - (dy * i)];
-        const p2: Coord = [a2x + (dx * i), a2y + (dy * i)];
+        const p1 = new Coords(c1.x - (dx * i), c1.y - (dy * i));
+        const p2 = new Coords(c2.x + (dx * i), c2.y + (dy * i));
 
         results.push(p1);
         results.push(p2);
@@ -99,19 +53,18 @@ const getAntiNodesPart2 = ([a1x, a1y]: Coord, [a2x, a2y]: Coord): Coord[] => {
 
 
 
-const part1 = (grid: Grid): number => {
+const part1 = (grid: Grid<string>): number => {
     // Build a list of all the antenna
-    const antenna: Record<string, Coord[]> = {};
-    const antiNodes: Coord[] = [];
+    const antenna: Record<string, Coords[]> = {};
+    const antiNodes: Coords[] = [];
 
-    // @ts-ignore
-    for (const [x, y, c] of grid.iterate()) {
-        if (c !== '.') {
-            if (!antenna[c]) {
-                antenna[c] = [];
+    for (const { coords, value } of grid) {
+        if (value !== '.') {
+            if (!antenna[value]) {
+                antenna[value] = [];
             }
 
-            antenna[c].push([x, y]);
+            antenna[value].push(coords);
         }
     }
 
@@ -121,8 +74,8 @@ const part1 = (grid: Grid): number => {
             const pairAntiNodes = getAntiNodesPart2(antennae[a1i], antennae[a2i]);
 
             pairAntiNodes.forEach((antiNode) => {
-                if (grid.isInBounds(antiNode[0], antiNode[1])) {
-                    if (!antiNodes.find((an) => an[0] === antiNode[0] && an[1] === antiNode[1])) {
+                if (grid.isInBounds(antiNode)) {
+                    if (!antiNodes.find((an) => an.equals(antiNode))) {
                         antiNodes.push(antiNode);
                     }
                 }
@@ -134,5 +87,3 @@ const part1 = (grid: Grid): number => {
 };
 
 readInput('input.txt').then(part1).then(console.log);
-
-// console.log(JSON.stringify(getAntiNodes([9, 9], [10, 10])))
