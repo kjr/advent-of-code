@@ -1,15 +1,15 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "downlevelIteration": true,
-    "baseUrl": ".",
-    "paths": {
-      "@Utils/*": ["utils/*"]
-    },
-    "lib": ["ES2023"]
-  }
+	"compilerOptions": {
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"sourceMap": true,
+		"downlevelIteration": true,
+		"baseUrl": ".",
+		"paths": {
+			"@Utils/*": ["utils/*"]
+		},
+		"lib": ["ES2023"]
+	}
 }
