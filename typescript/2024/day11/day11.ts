@@ -5,17 +5,19 @@ const readInput = async (fileName: string): Promise<number[]> => {
   return data.toString().split(' ').map(Number);
 }
 
-const processValues = (value: number): number[] => {
+const blinkValue = (value: number): number[] => {
   if (value === 0) {
     return [1];
-  } else if (String(value).length % 2 === 0) {
-    const s= String(value);
-    return [
-      Number(s.substring(0, s.length / 2)),
-      Number(s.substring(s.length / 2)),
-    ];
   } else {
-    return [ value * 2024];
+    const stringValue = String(value);
+    if (stringValue.length % 2 === 0) {
+      return [
+        Number(stringValue.substring(0, stringValue.length / 2)),
+        Number(stringValue.substring(stringValue.length / 2)),
+      ];
+    } else {
+      return [ value * 2024];
+    }
   }
 }
 
@@ -25,23 +27,21 @@ const getValueLength = (value: number, depth: number): number => {
   if (depth === 0) {
     return 1;
   } else {
-    if (depth < 60 && cache[depth]?.[value]) {
+    if (cache[depth]?.[value]) {
       return cache[depth][value];
     }
 
-    const pv = processValues(value);
+    const pv = blinkValue(value);
     let total = 0;
     for (let i = 0; i < pv.length; i++) {
       total += getValueLength(pv[i], depth - 1);
     }
 
-    if (depth < 60) {
-      if (cache[depth] === undefined) {
-        cache[depth] = {};
-      }
-
-      cache[depth][value] = total;
+    if (cache[depth] === undefined) {
+      cache[depth] = {};
     }
+
+    cache[depth][value] = total;
 
     return total;
   }
