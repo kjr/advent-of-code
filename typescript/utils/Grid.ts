@@ -15,9 +15,16 @@ export class Grid<T> {
 	 * @param filledValue
 	 * @param emptyValue
 	 */
-	static buildFromCoords<T>(coords: Coords[], filledValue: T, emptyValue: T): Grid<T> {
+	static buildFromCoords<T>(
+		coords: Coords[],
+		filledValue: T,
+		emptyValue: T,
+	): Grid<T> {
 		// Get the bounding box of the coords
-		let minX, minY, maxX, maxY;
+		let minX = undefined,
+			minY = undefined,
+			maxX = undefined,
+			maxY = undefined;
 		for (const coord of coords) {
 			minX = minX === undefined ? coord.x : Math.min(minX, coord.x);
 			minY = minY === undefined ? coord.y : Math.min(minY, coord.y);
@@ -57,11 +64,7 @@ export class Grid<T> {
 		}
 
 		return new Grid(newData);
-	};
-
-
-	//  AB   CA
-	//  CD   DB
+	}
 
 	isInBounds(coords: Coords): boolean {
 		// Is it quicker to just do `this.get(coords) !== undefined`? But what if we have undefined values
@@ -85,7 +88,7 @@ export class Grid<T> {
 		if (this.isInBounds(coords)) {
 			this.data[coords.y][coords.x] = value;
 		} else {
-			throw new Error('tried to update out of bounds');
+			throw new Error("tried to update out of bounds");
 		}
 	}
 
