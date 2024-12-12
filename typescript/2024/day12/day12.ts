@@ -47,10 +47,7 @@ const getPlotPerimeter = (
 	}, 0);
 };
 
-const getDiscountedPlotPerimeter = (
-	grid: Grid<string>,
-	pointsInPlot: Coords[],
-): number => {
+const getDiscountedPlotPerimeter = (pointsInPlot: Coords[]): number => {
 	let plotGrid = Grid.buildFromCoords(pointsInPlot, "X", " ");
 	let totalFaces = 0;
 
@@ -84,7 +81,7 @@ const solve = (grid: Grid<string>): number[] => {
 		if (mask.get(coords) !== undefined) {
 			const plot = buildPlot(grid, mask, coords, value);
 			const perimeter = getPlotPerimeter(grid, plot, value);
-			const discountedPerimeter = getDiscountedPlotPerimeter(grid, plot);
+			const discountedPerimeter = getDiscountedPlotPerimeter(plot);
 
 			console.log(
 				"found plot",
